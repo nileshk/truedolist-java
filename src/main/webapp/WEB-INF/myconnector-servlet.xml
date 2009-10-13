@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!--
+  - @author Nilesh Kapadia (nileshka@gmail.com)
+  -
+  - Application context definition for "example" DispatcherServlet.
+  -->
+
+<beans>
+	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource" >
+		<property name="basename"><value>Messages</value></property>
+	</bean>
+	
+	<bean name="/initialize.do" class="com.myconnector.web.controller.InitializeController">
+		<property name="view"><value>initialize.jsp</value></property>
+		<property name="securityService"><ref bean="securityService"/></property>
+	</bean>	
+	<bean name="/home.do" class="com.myconnector.web.controller.LoginController">
+		<property name="securityService"><ref bean="securityService"/></property>
+		<property name="userCookieCheck"><ref bean="loginInterceptor"/></property>
+		<property name="commandClass"><value>com.myconnector.domain.Login</value></property>
+		<!-- TODO add a programmatic validator here -->
+<!-- 		<property name="validator"><ref bean="beanValidator"/></property>-->
+		<property name="formView"><value>home.jsp</value></property>
+		<property name="successView"><value>home.jsp</value></property>
+	</bean>
+	<bean name="createNewUserValidator" class="com.myconnector.web.CreateNewUserValidator">
+		<property name="inviteService" ref="inviteService"/>
+		<property name="securityService" ref="securityService"/>
+	</bean>
+	<bean name="/invite.do" class="com.myconnector.web.controller.CreateNewUserWithInviteController">
+		<property name="securityService"><ref bean="securityService"/></property>
+		<property name="formView" value="createNewUserWithInvite.jsp"/>
+		<property name="successView" value="createNewUserWithInviteSuccess.jsp"/>
+		<property name="validator" ref="createNewUserValidator"/>		
+	</bean>
+	<bean name="/emailVerification.do"
+		class="com.myconnector.web.controller.EmailVerificationController">
+		<property name="emailVerificationService" ref="emailVerificationService" />
+		<property name="view" value="emailVerified.jsp" />
+	</bean>
+	
+	<bean name="/logout.do" class="com.myconnector.web.controller.LogoutController">
+		<property name="view"><value>../../home.do</value></property>
+		<property name="securityService"><ref bean="securityService"/></property>
+	</bean>	
+
+	<bean id="secure_profile" class="com.myconnector.web.controller.ProfileController">
+		<property name="userService"><ref bean="userService"/></property>
+		<property name="view"><value>profile.jsp</value></property>
+	</bean>	
+	<bean id="secure_users" class="com.myconnector.web.controller.UsersController">
+		<property name="view"><value>users.jsp</value></property>
+		<property name="userService"><ref bean="userService"/></property>
+	</bean>
+	<bean id="secure_userList" class="com.myconnector.web.controller.UserListController">
+		<property name="formView"><value>userList.jsp</value></property>
+		<property name="userService"><ref bean="userService"/></property>
+	</bean>
+	<bean id="secure_userDelete" class="com.myconnector.web.controller.OldGenericDeleteController">
+		<property name="view"><value>userList.do</value></property>
+		<property name="service"><ref bean="userService"/></property>
+	</bean>
+	<bean id="secure_todoLists" class="com.myconnector.web.controller.GenericListController">
+		<property name="view"><value>todoLists.jsp</value></property>
+		<property name="service"><ref bean="todoListService"/></property>
+	</bean>
+	<bean id="secure_todoListEdit" class="com.myconnector.web.controller.GenericEditController">
+		<property name="service"><ref bean="todoListService"/></property>
+		<property name="commandClass"><value>com.myconnector.domain.TodoList</value></property>		
+		<property name="formView"><value>todoListEdit.jsp</value></property>
+		<property name="successView"><value>todoLists.do</value></property>		
+	</bean>
+	<bean id="secure_todoListDelete" class="com.myconnector.web.controller.GenericDeleteController">
+		<property name="view" value="todoLists.do"/>
+		<property name="service" ref="todoListService"/>
+	</bean>
+	<bean id="secure_todoListMoveUpOrDown" class="com.myconnector.web.controller.TodoListMoveUpOrDownController">
+		<property name="view" value="todoLists.do"/>
+		<property name="todoListService" ref="todoListService"/>
+	</bean>
+	<bean id="secure_todoItemList" class="com.myconnector.web.controller.TodoItemListController">
+		<property name="view"><value>todoItemList.jsp</value></property>
+		<property name="todoListService"><ref bean="todoListService"/></property>
+	</bean>
+	<bean id="secure_todoItemEdit" class="com.myconnector.web.controller.TodoItemEditController">
+		<property name="service"><ref bean="todoItemService"/></property>
+		<property name="commandClass"><value>com.myconnector.domain.TodoItem</value></property>		
+		<property name="formView"><value>todoItemEdit.jsp</value></property>
+		<property name="successView"><value>todoItemList.do</value></property>
+	</bean>
+	<bean id="secure_todoItemDelete" class="com.myconnector.web.controller.GenericDeleteController">
+		<property name="view" value="todoItemList.do"/>
+		<property name="service" ref="todoItemService"/>
+	</bean>
+	<bean id="secure_todoItemMove" class="com.myconnector.web.controller.TodoItemMoveController">
+		<property name="formView"><value>todoItemMove.jsp</value></property>
+		<property name="successView"><value>todoItemList.do</value></property>
+		<property name="todoItemService" ref="todoItemService"/>
+		<property name="todoListService" ref="todoListService"/>
+	</bean>
+	<bean id="secure_todoItemMoveUpOrDown" class="com.myconnector.web.controller.TodoItemMoveUpOrDownController">
+		<property name="view" value="todoItemList.do"/>
+		<property name="todoItemService" ref="todoItemService"/>
+	</bean>
+	<bean id="secure_todoAdvanced" class="com.myconnector.web.controller.GenericListController">
+		<property name="view"><value>todoAdvanced.jsp</value></property>
+		<property name="service"><ref bean="todoListService"/></property>
+	</bean>
+	<bean id="secure_todoMulti" class="com.myconnector.web.controller.GenericListController">
+		<property name="view"><value>todoMulti.jsp</value></property>
+		<property name="service"><ref bean="todoListService"/></property>
+	</bean>
+	
+	<bean id="passwordEditValidator" class="com.myconnector.web.PasswordEditValidator">
+		<property name="securityService" ref="securityService"/>
+	</bean>
+	<bean id="secure_passwordEdit" class="com.myconnector.web.controller.PasswordEditController">
+		<property name="securityService" ref="securityService"/>		
+		<property name="formView" value="passwordEdit.jsp"/>
+		<property name="successView" value="passwordChangeSuccess.jsp"/>
+		<property name="validator" ref="passwordEditValidator"/>
+	</bean>
+	<bean id="secure_createInvite" class="com.myconnector.web.controller.CreateInviteController">
+		<property name="inviteService" ref="inviteService"/>
+		<property name="view" value="createInvite.jsp"/>
+	</bean>
+	<bean id="secure_todoListsAllXml" class="com.myconnector.web.controller.TodoListsAllXmlController" autowire="byType">
+		<property name="view" value="xml.jsp"/>		
+	</bean>
+	<bean id="secure_todoListsImportFromXml" 
+		class="com.myconnector.web.controller.TodoListsImportFromXmlController">
+		<property name="todoListService" ref="todoListService"/>		
+		<property name="formView" value="todoListsImport.jsp"/>
+		<property name="successView" value="todoListsImportSuccess.jsp"/>
+	</bean>
+
+	<bean id="loginInterceptor" class="com.myconnector.web.LoginInterceptor">
+		<property name="securityService" ref="securityService"/>
+		<property name="view"><value>../../home.do</value></property>
+	</bean>
+
+	<!--  Security Levels: Guest = 5, Basic = 10, User = 50, Admin = 75, SuperUser = 100  -->
+	<bean id="permissionInterceptor" class="com.myconnector.web.PermissionInterceptor">
+		<property name="view"><value>../../home.do</value></property>
+		<property name="permissionMap">
+			<map>
+				<entry key="/profile.do" value="5"/>
+				
+				<entry key="/users.do" value="75"/>
+				<entry key="/userList.do" value="100"/>
+				<entry key="/userDelete.do" value="100"/>
+				
+				<entry key="/createInvite.do" value="100"/>
+			</map>
+		</property>				
+	</bean>
+
+	<!--  View Resolvers -->
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass"><value>org.springframework.web.servlet.view.JstlView</value></property>
+		<property name="prefix"><value>/WEB-INF/jsp/</value></property>
+		<property name="suffix"><value></value></property>
+	</bean>
+
+	<bean id="multipartResolver" 
+	    class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+	</bean>
+
+	<bean id="defaultHandlerMapping" class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"/>
+
+	<bean id="secureHandlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="interceptors">
+			<list>
+				<ref bean="loginInterceptor"/>
+				<ref bean="permissionInterceptor"/>				
+			</list>
+		</property>
+		<property name="urlMap">
+			<map>
+				<entry key="/profile.do"><ref local="secure_profile"/></entry>
+				<entry key="/passwordEdit.do"><ref local="secure_passwordEdit"/></entry>
+				
+				<entry key="/users.do"><ref local="secure_users"/></entry>
+				<entry key="/userList.do"><ref local="secure_userList"/></entry>
+				<entry key="/userDelete.do"><ref local="secure_userDelete"/></entry>
+				
+				<entry key="/createInvite.do"><ref local="secure_createInvite"/></entry>
+
+				<entry key="/todoLists.do"><ref local="secure_todoLists"/></entry>
+				<entry key="/todoListEdit.do"><ref local="secure_todoListEdit"/></entry>
+				<entry key="/todoItemList.do"><ref local="secure_todoItemList"/></entry>
+				<entry key="/todoItemEdit.do"><ref local="secure_todoItemEdit"/></entry>
+				<entry key="/todoItemDelete.do" value-ref="secure_todoItemDelete"></entry>
+				<entry key="/todoListDelete.do" value-ref="secure_todoListDelete"></entry>
+				<entry key="/todoItemMove.do" value-ref="secure_todoItemMove"></entry>
+				<entry key="/todoAdvanced.do" value-ref="secure_todoAdvanced"></entry>
+				<entry key="/todoMulti.do" value-ref="secure_todoMulti"></entry>
+				<entry key="/todoListMoveUpOrDown.do" value-ref="secure_todoListMoveUpOrDown"></entry>
+				<entry key="/todoItemMoveUpOrDown.do" value-ref="secure_todoItemMoveUpOrDown"></entry>
+				
+				<entry key="/todoListsAllXml.do" value-ref="secure_todoListsAllXml"/>
+				<entry key="/todoListsImportFromXml.do" value-ref="secure_todoListsImportFromXml"/>
+			</map>
+		</property>
+	</bean>
+	
+	<bean id="exceptionResolver"
+        class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <property name="exceptionMappings">
+            <props>
+                <prop key="com.myconnector.exception.MessageException">error.jsp</prop>
+            </props>
+        </property>
+    </bean>	
+
+</beans>
+

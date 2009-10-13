@@ -1,0 +1,109 @@
+/** Add css rules here for your application. */
+body, .gwt-Label, .gwt-TextBox {
+  font-family:"Lucida Grande",Verdana, Geneva, Arial, Helvetica, sans-serif;  
+}
+
+div,td {
+  color:#000000
+}
+
+a:link {
+  color:#0000cc
+}
+     
+a:visited {
+  color:#551a8b
+}
+
+a:active {
+  color:#ff0000
+}
+
+button {
+  display: block;
+  font-size: 16pt
+}
+
+.widePanel {
+  width: 100%
+}
+
+img {
+  margin-top: 20px;
+}
+
+/* Added this because img margin-top: 20px was throwing images off */
+.gwt-Image {
+	margin-top: 0px;
+}
+
+/*
+.gwt-Button {
+  width: 10em;
+}
+
+.gwt-Button:active {
+}
+
+.gwt-Button[disabled] {
+  color: #888;
+}
+*/
+.todoItemLabel {
+}
+
+.todoItemLabelMouseOver {
+  font-weight: bold;	
+}
+
+.clickableLabel {
+  cursor: hand;
+  cursor: pointer;	
+}
+
+.todoListLabel {
+  padding: 1px;
+  margin: 0px;
+  white-space: nowrap;
+  cursor: hand;
+  cursor: pointer;	
+}
+
+.todoItemLabel {
+  cursor: hand;
+  cursor: pointer;	
+}
+
+.todoItemHighlighted {
+  background-color: yellow;
+}
+
+.todoListHeaderLabel {
+  font-size: medium;
+  cursor: hand;
+  cursor: pointer;
+}
+
+.todoListLabelSelected {
+  background: #93c2f1 url(gwt/standard/images/hborder.png) repeat-x 0px -1463px;
+}
+
+.todoListPreviewDropItem {
+  background-color: #77AAFF; /* light blue */
+}
+
+.settingsHeaderLabel {
+	font-size: medium;
+	padding: 10px;	
+	color:#6495ED;
+}
+
+.validationErrorLabel {
+	color: #DC143C;
+}
+
+.settingChangeSuccessMessage {
+	background-color: #77AAFF; /* light blue */
+	padding: 3px;
+	margin: 2px;	
+}

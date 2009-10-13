@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+		"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+    
+<hibernate-mapping default-lazy="false">
+
+<class name="com.myconnector.domain.Invite" table="invite">
+
+    <id name="id" type="java.lang.Long" column="id">
+        <generator class="sequence" />
+    </id>
+
+	<property name="token" type="java.lang.String" column="token" 
+		not-null="true" length="32" unique="true"/>
+
+	<property name="email" type="java.lang.String" column="email" not-null="false" length="320"
+		unique="true" />
+</class>
+</hibernate-mapping>

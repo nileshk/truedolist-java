@@ -1,0 +1,115 @@
+body, h1, h2, h3, h4, h5, h6, p, strong, div, form, acronym, label, table, td, th, span, a, hr, code, pre, hr {
+	font-family:"Lucida Grande",Verdana, Geneva, Arial, Helvetica, sans-serif;
+	color: #333;	
+	background-repeat:no-repeat;
+}
+
+table.mars {
+	border: 1px solid #666;
+	width: 100%;
+	margin: 20px 0 20px 0;
+}
+table.mars th, td {
+	padding: 2px 4px 2px 4px;
+	text-align: left;
+	vertical-align: top;
+}
+table.mars thead tr {
+  background-color: #ddd;
+}
+table.mars tr.even {
+  background-color: #eee;
+}
+table.mars tr.odd { 
+}
+
+table.inputform {
+	border: 4px outset #ffffff;
+	background-image: url(../img/gradientlarge.png);
+	background-position: 0% 100%;
+	background-repeat: repeat-x;
+	position: relative;
+}
+
+/*
+input.input-button {
+	background-color: #000000;
+	color: #ffffff;
+	font-weight: bold;
+	font-size: 10pt;
+}
+*/
+
+table.menu {
+	border: 1px solid #666;
+	font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	width: 80%;
+}
+table.menu th, td {
+	padding: 2px 4px 2px 4px;
+	text-align: left;
+	vertical-align: top;
+}
+table.menu tr {
+  background-color: #eec;
+}
+
+span.pagebanner {
+	background-color: #eee;
+	border: 1px dotted #999;
+	padding: 2px 4px 2px 4px;
+	width: 79%;
+	margin-top: 10px;
+	display:block;
+	border-bottom: none;
+}
+
+span.pagelinks {
+	background-color: #eee;
+	border: 1px dotted #999;
+	padding: 2px 4px 2px 4px;
+	width: 79%;
+	display:block;
+	border-top: none;
+	margin-bottom: -5px;
+}
+
+th.sorted {
+    background-color: orange;
+}
+th.sorted a, th.sortable a {
+	padding: 0 0px 0px 9px;
+	background-position: left;
+	display: block;
+	width: 100%;
+}
+th.sortable a {
+	background-image: url(../img/arrow_off.png);
+}
+th.order1 a {
+	background-image: url(../img/arrow_down.png);
+}
+th.order2 a {
+	background-image: url(../img/arrow_up.png);
+}
+
+span.export {
+	padding: 0 4px 1px 20px;
+	display:inline; display:inline-block;
+	cursor: pointer;
+}
+span.excel {
+	background-image: url(../img/ico_file_excel.png);
+}
+span.csv {
+	background-image: url(../img/ico_file_csv.png);
+}
+span.xml {
+	background-image: url(../img/ico_file_xml.png);
+}
+
+input.itext { font-size: smaller; background: #E4E4E4; border: 0; }
+input.ibutton { font-size: xx-small; border: 1px outset; margin: 0px; padding: 0px; }
+span.reply { background: #ffffdd; white-space: pre; }
+span.warning { font-size: smaller; color: red; }

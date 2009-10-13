@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+		"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+    
+<hibernate-mapping default-lazy="false">
+
+<class name="com.myconnector.domain.UserData" table="user_data">
+
+    <id name="id" type="java.lang.Long" column="id">
+        <generator class="sequence" />
+    </id>
+
+    <property name="userLogin" type="java.lang.String" column="user_login" not-null="true" length="64" unique="true"/>
+    <property name="userPassword" type="java.lang.String" column="user_password" not-null="true" length="64"/>
+    <property name="securityLevel" type="byte" column="security_level" not-null="true" length="2"/>
+    <property name="email" type="java.lang.String" column="email" not-null="true" length="320" unique="true"/>
+	<property name="enabled" type="java.lang.Boolean" column="enabled" not-null="true" />
+
+    <!-- Associations -->
+  
+    <!-- bi-directional one-to-many association to Cookie -->
+    <set name="cookies" lazy="true" inverse="true" cascade="none">
+        <key><column name="user_id" /></key>
+        <one-to-many class="com.myconnector.domain.UserCookie"/>
+    </set>
+
+    <!-- bi-directional one-to-many association to Cookie -->
+    <set name="todoLists" lazy="true" inverse="true" cascade="none" order-by="position, title">
+        <key><column name="user_id" /></key>
+        <one-to-many class="com.myconnector.domain.TodoList"/>
+    </set>
+
+    <!-- bi-directional one-to-many association to Cookie -->
+    <set name="emailVerifications" lazy="true" inverse="true" cascade="none">
+        <key><column name="user_id" /></key>
+        <one-to-many class="com.myconnector.domain.EmailVerification"/>
+    </set>
+
+</class>
+</hibernate-mapping>

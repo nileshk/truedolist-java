@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<todoLists xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="todo.xsd">
+	<todoList title="list1" id="1234">
+		<todoItem id="2345" title="listitem" />
+		<todoItem id="3456" title="listitem2" />
+	</todoList>
+	<todoList title="list2" id="abcd">
+		<todoItem id="4" title="listitem3" />
+		<todoItem id="5" title="listitem4" />
+	</todoList>
+	<todoList title="list3" id="asdf">
+		<todoItem id="5" title="listitem5" />
+		<todoItem id="6" title="listitem6" />
+	</todoList>
+</todoLists>

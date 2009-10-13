@@ -1,0 +1,15 @@
+.DS_Store
+.svn
+svn-commit.tmp
+svn-prop.tmp
+target
+.manager
+.settings
+classes
+lib
+*.class
+.project
+.classpath
+bin
+
+        

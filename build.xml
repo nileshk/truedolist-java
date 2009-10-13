@@ -1,0 +1,276 @@
+<?xml version="1.0"?>
+
+<project name="truedolist" basedir="." default="usage">
+
+	<property name="name" value="truedolist" />
+
+	<property name="src.dir" value="src/main/java" />
+	<property name="web.dir" value="src/main/webapp" />
+	<property name="output.dir" value="../truedolist-output" />
+	<property name="war.dir" value="${output.dir}/${name}" />
+	<property name="lib.build.dir" value="lib" />
+	<property name="lib.deploy.dir" value="${web.dir}/WEB-INF/lib" />
+
+	<property name="client.dir" value="${output.dir}/client" />
+	<property name="build.dir" value="${output.dir}/.classes" />
+	<property name="weblib.dir" value="${war.dir}/WEB-INF/lib" />
+	<property name="dist.dir" value="${output.dir}/dist" />
+	<property name="webclasses.dir" value="${war.dir}/WEB-INF/classes" />
+
+	<property name="gwt.module" value="com.myconnector.TrueDoClient" />
+	<property name="gwt.output.dir" value="${output.dir}/gwt" />
+	<property name="client.name" value="client" />
+	<property name="client.html.name" value="TrueDoClient.html" />
+	<property name="index.html.name" value="index.html" />
+
+	<property name="deploy.host" value="truedolist.com" />
+	<property name="deploy.dir" value="/home/nil/tomcat/webapps" />
+
+	<property name="xsd.dir" value="xsd" />
+	<property name="todo-schema.file" value="todo.xsd" />
+	<property name="todo.xml.package" value="com.myconnector.xml.todolists" />
+	<property name="user-schema.file" value="user.xsd" />
+	<property name="user.xml.package" value="com.myconnector.xml.user" />
+
+	<path id="master-classpath">
+		<fileset dir="${lib.build.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+
+		<fileset id="jar-fileset" dir="${lib.deploy.dir}">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<path id="xjc-classpath">
+		<fileset dir="${lib.build.dir}">
+			<include name="**/*.jar" />
+			<exclude name="**/cxf*.jar" />
+		</fileset>
+
+		<fileset id="jar-fileset" dir="${lib.deploy.dir}">
+			<include name="*.jar" />
+			<exclude name="**/cxf*.jar" />
+		</fileset>
+	</path>
+	<!--
+	<taskdef name="scp" classname="org.apache.tools.ant.taskdefs.optional.ssh.Scp" classpathref="master-classpath" />
+-->
+	<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask" classpathref="xjc-classpath">
+	</taskdef>
+
+	<!-- TARGET: usage-->
+	<target name="usage">
+
+		<echo message="" />
+		<echo message="${name} build file" />
+		<echo message="------------------------------------------------------" />
+		<echo message="" />
+		<echo message="Available targets are:" />
+		<echo message="" />
+		<echo message="clean       --> Clean output dirs" />
+		<echo message="build       --> Compile main sources and copy libraries" />
+		<echo message="warfile     --> Build the web application archive" />
+		<echo message="all         --> Clean, build, warfile" />
+		<echo message="deploy      --> Deploy to website" />
+		<echo message="release     --> all, deploy" />
+		<echo message="generate-proxy             --> Generate web service proxy for bookmark" />
+		<echo message="generate-proxy-dictionary  --> Generate web service proxy for dictionary" />
+		<echo message="" />
+
+	</target>
+
+
+	<!-- TARGET: clean-->
+	<target name="clean" description="Clean output dirs (build, weblib, dist)">
+
+		<delete dir="${build.dir}" />
+		<delete dir="${war.dir}" />
+		<delete dir="${dist.dir}" />
+		<delete dir="${client.dir}" />
+		<delete dir="${gwt.output.dir}" />
+
+	</target>
+
+	<!-- TARGET: build-->
+	<target name="build" depends="compile-java,compile-and-copy-gwt" description="Compile main source tree java files into class files, generate jar files">
+	</target>
+
+	<target name="build-linux" depends="compile-java,compile-and-copy-gwt-linux" 
+			description="Compile main source tree java files into class files, generate jar files"/>
+	
+	<target name="compile-java">
+		<mkdir dir="${weblib.dir}" />
+		<mkdir dir="${war.dir}" />
+		<mkdir dir="${webclasses.dir}" />
+
+		<javac destdir="${webclasses.dir}" source="1.5" target="1.5" debug="true" deprecation="false" optimize="false" failonerror="true">
+			<src path="${src.dir}" />
+			<classpath refid="master-classpath" />
+		</javac>
+
+		<copy todir="${webclasses.dir}" preservelastmodified="true">
+			<fileset dir="${src.dir}">
+				<include name="**/*.xml" />
+				<include name="**/*.properties" />
+				<include name="com/myconnector/public/**/*" />
+			</fileset>
+		</copy>
+
+		<copy todir="${war.dir}" preservelastmodified="true">
+			<fileset dir="${web.dir}">
+				<exclude name="WEB-INF/classes/**/*" />
+				<exclude name="${gwt.module}/**/*" />
+				<exclude name="*${gwt.module}*" />
+				<include name="**/*" />
+			</fileset>
+		</copy>
+
+		<copy todir="${weblib.dir}" preservelastmodified="true">
+			<fileset refid="jar-fileset" />
+		</copy>
+	</target>
+
+	<target name="compile-and-copy-gwt" depends="compile-gwt, copy-gwt">
+	</target>
+
+	<target name="compile-and-copy-gwt-linux" depends="compile-gwt-linux, copy-gwt">
+	</target>
+	
+	<target name="compile-gwt" description="Compile GWT client">
+		<!-- cross-compile client-side java classes -->
+		<java classname="com.google.gwt.dev.GWTCompiler" dir="${basedir}" fork="true">
+			<jvmarg value="-Xmx256M" />
+			<jvmarg value="-XstartOnFirstThread" />
+			<classpath>
+				<pathelement location="${src.dir}" />
+				<path refid="master-classpath" />
+				<pathelement path="${java.class.path}" />
+
+				<!--
+					<pathelement location="${webclasses.dir}" />
+	                <pathelement location="${bin.dir}"/>
+	                <pathelement path="${gwt.home}/gwt-user.jar"/>
+	                <pathelement path="${gwt.home}/gwt-dev-${platform}.jar"/>
+	            -->
+			</classpath>
+			<arg line="-out ${gwt.output.dir}" />
+			<arg value="%*" />
+			<arg value="${gwt.module}" />
+		</java>
+	</target>
+
+	<target name="compile-gwt-linux" description="Compile GWT client">
+		<!-- cross-compile client-side java classes -->
+		<java classname="com.google.gwt.dev.GWTCompiler" dir="${basedir}" fork="true">
+			<jvmarg value="-Xmx256M" />
+			<classpath>
+				<pathelement location="${src.dir}" />
+				<path refid="master-classpath" />
+				<pathelement path="${java.class.path}" />
+
+				<!--
+					<pathelement location="${webclasses.dir}" />
+	                <pathelement location="${bin.dir}"/>
+	                <pathelement path="${gwt.home}/gwt-user.jar"/>
+	                <pathelement path="${gwt.home}/gwt-dev-${platform}.jar"/>
+	            -->
+			</classpath>
+			<arg line="-out ${gwt.output.dir}" />
+			<arg value="%*" />
+			<arg value="${gwt.module}" />
+		</java>
+	</target>	
+
+	<target name="copy-gwt">
+		<delete dir="${war.dir}/${client.name}" failonerror="false" />
+		<mkdir dir="${war.dir}/${client.name}" />
+		<copy todir="${war.dir}/${client.name}">
+			<fileset dir="${gwt.output.dir}/${gwt.module}" />
+		</copy>
+		<move file="${war.dir}/${client.name}/${client.html.name}"
+			toFile="${war.dir}/${client.name}/${index.html.name}"/>
+	</target>	
+	
+	<!-- TARGET: compile-gwt-for-dev -->
+	<target name="compile-gwt-for-dev" depends="compile-gwt">
+		<mkdir dir="${web.dir}/${client.name}" />
+		<copy todir="${web.dir}/${client.name}">
+			<fileset dir="${gwt.output.dir}/${gwt.module}" />
+		</copy>
+		<move file="${web.dir}/${client.name}/${client.html.name}"
+			toFile="${web.dir}/${client.name}/${index.html.name}"/>
+	</target>
+
+	<!-- TARGET: warfile -->
+	<target name="warfile" depends="build" description="Build the web application archive">
+
+		<mkdir dir="${dist.dir}" />
+
+		<war warfile="${dist.dir}/${name}.war" basedir="${war.dir}" webxml="${war.dir}/WEB-INF/web.xml">
+			<exclude name="WEB-INF/web.xml" />
+			<include name="**/*" />
+		</war>
+
+	</target>
+	<!--
+	<path id="junitclasspath">
+		<pathelement location="${jar.dir}/junit-3.8.1.jar"/>
+		<pathelement location="${jar.dir}/ant-junit.jar"/>
+	</path>
+	
+	
+	<taskdef name="junit" 
+	            classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask" classpathref="junitclasspath">
+	</taskdef>	
+-->
+	<target name="tests">
+		<junit printsummary="yes">
+			<classpath>
+				<pathelement location="${weblib.dir}/${name}.jar" />
+				<path>
+					<filelist refid="master-classpath" />
+				</path>
+			</classpath>
+		</junit>
+	</target>
+
+	<!-- TARGET:compile-xsd -->
+	<target name="compile-xsd" description="Compile todo.xsd and user.xsd to Java classes">
+		<xjc schema="${xsd.dir}/${todo-schema.file}/" destdir="${src.dir}" package="${todo.xml.package}" />
+		<xjc schema="${xsd.dir}/${user-schema.file}/" destdir="${src.dir}" package="${user.xml.package}" />
+	</target>
+
+	<!-- TARGET:deploy -->
+	<target name="deploy">
+		<move file="${dist.dir}/${name}.war" tofile="${dist.dir}/ROOT.war" failonerror="false" />
+		<input message="Username:" addproperty="ssh.username" />
+		<input message="Password:" addproperty="ssh.password" />
+		<scp todir="${ssh.username}:${ssh.password}@${deploy.host}:${deploy.dir}">
+			<fileset dir="${dist.dir}">
+				<include name="ROOT.war" />
+			</fileset>
+		</scp>
+	</target>
+
+
+	<!-- TARGET: all -->
+	<target name="all" depends="clean,build,warfile" description="Clean,build,warfile" />
+
+	<target name="all-linux" depends="clean,build-linux,warfile" description="Clean,build,warfile" />
+
+	<!-- TARGET: release -->
+	<target name="release" depends="all,deploy" />
+<!--
+	<taskdef name="wsgen" classname="org.codehaus.xfire.gen.WsGenTask" classpathref="master-classpath" />
+
+	<target name="generate-proxy">
+		<wsgen outputDirectory="${basedir}/client/" wsdl="http://localhost:8080/todoList/services/TodoService?wsdl" package="com.truedolist.client.proxy" overwrite="true" />
+	</target>
+
+
+	<target name="generate-proxy-test">
+		<wsgen outputDirectory="${basedir}/client/" wsdl="http://localhost:8080/myconnector/services/TestService?wsdl" package="com.myconnector.client.proxy.test" overwrite="true" />
+	</target>
+-->
+</project>

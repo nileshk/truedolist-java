@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+    <!-- START SNIPPET: xfire -->
+    <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="urlMap">
+            <map>
+                <entry key="/TodoService">
+                    <ref bean="todoXFireWebService"/>
+                </entry>
+                <entry key="/TestService">
+                    <ref bean="test"/>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+	<bean id="httpSessionHandler" class="com.myconnector.webservice.XFireHttpSessionHandler">
+	</bean>
+
+<!-- 
+	URL is: http://localhost:8080/todoList/services/TodoService?wsdl
+ -->
+    <bean id="todoXFireWebService" class="org.codehaus.xfire.spring.remoting.XFireExporter">
+        <property name="serviceFactory">
+            <ref bean="xfire.serviceFactory"/>
+        </property>
+        <property name="xfire">
+            <ref bean="xfire"/>
+        </property>
+        <property name="serviceBean">
+            <ref bean="todoWebService"/>
+        </property>
+        <property name="serviceClass">
+            <value>com.myconnector.webservice.TodoWebService</value>
+        </property>
+	    <property name="inHandlers">
+	    	<list>
+	    		<ref local="httpSessionHandler"/>
+	    	</list>
+	    </property>
+		<property name="name" value="TodoService"/>
+		<property name="namespace" value="http://www.truedolist.com/webservices"/>
+    </bean>
+
+    <bean id="test" class="org.codehaus.xfire.spring.remoting.XFireExporter">
+        <property name="serviceFactory">
+            <ref bean="xfire.serviceFactory"/>
+        </property>
+        <property name="xfire">
+            <ref bean="xfire"/>
+        </property>
+        <property name="serviceBean">
+            <ref bean="testService"/>
+        </property>
+        <property name="serviceClass">
+            <value>com.myconnector.webservice.TestService</value>
+        </property>
+    </bean>
+    <!-- END SNIPPET: xfire -->
+</beans>

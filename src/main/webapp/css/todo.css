@@ -1,0 +1,63 @@
+#menu {
+/*	background-color: #666;
+	border-bottom: 1px solid #333;*/
+}
+#lists {
+/*	background-color: #664;*/
+	float: left;
+	width: 160px;
+	margin-left: 10px;
+	margin-top: 5px;
+	padding: 1em;
+	padding-right: 3em;
+	border: 2px solid #efefef;
+}
+#lists li {
+  font-family: "Lucida Grande", verdana, arial, helvetica, sans-serif;
+  font-size: 16px;
+  font-weight: bold;    	
+ margin: -1.4em .4em .7em -1.6em;
+ padding: 1.4em .4em .7em 0.6em;
+ list-style-type: none;
+ 	
+ }
+#lists a {
+  color: #03c;
+}	
+/*
+#list-selected li {
+	background-color: #424;
+}
+*/
+#items {
+/*	background-color: #123; */
+  font-family: "Lucida Grande", verdana, arial, helvetica, sans-serif;
+  font-size: 16px;
+	padding-left: 2em;
+	margin: 5px 2em 0 220px;
+/*	border: 2px solid #efefef;	*/
+}
+#items li {
+ margin: -1.4em .4em .7em -1.6em;
+ padding: 1.4em .4em .7em 0.6em;
+ list-style-type: none;
+}
+
+div.listsMulti {
+	float: left;
+/*	background-color: #123; */
+  font-family: "Lucida Grande", verdana, arial, helvetica, sans-serif;
+  font-size: 16px;
+	padding-left: 10px;
+	margin: 5px 5px 5px 5px;
+	border: 2px solid #efefef;
+}
+div.listsMulti li {
+ margin: -1.4em .4em .7em -1.6em;
+ padding: 1.4em 4em .7em 0.6em;
+ list-style-type: none;
+}		
+
+div.listDroppableHoverActive {
+	border: 2px solid #000000;	
+}

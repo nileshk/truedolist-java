@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<todoList xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="todo.xsd" title="list1" id="1234">
+	<todoItem id="2345" title="listitem"/>
+	<todoItem id="3456" title="listitem2"/>
+</todoList>

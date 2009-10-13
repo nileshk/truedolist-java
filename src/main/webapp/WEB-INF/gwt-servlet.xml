@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<!-- GWT-RPC configuration -->
+	<bean id="gwtHandlerMapping" class="com.myconnector.gwt.GwtAnnotationHandlerMapping"/>
+	
+	<bean id="gwtHandlerAdapter" class="com.myconnector.gwt.GwtRcpEndPointHandlerAdapter"/>
+	
+	<bean id="todoServiceGwt" class="com.myconnector.service.gwt.TodoServiceGwtImpl" autowire="byType"/>
+	
+	<bean id="userServiceGwt" class="com.myconnector.service.gwt.UserServiceGwtImpl" autowire="byType"/>
+</beans>

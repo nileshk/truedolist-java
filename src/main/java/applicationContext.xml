@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!--
+  - Application context definition
+	-->
+<beans>
+
+	<!-- ========================= GENERAL DEFINITIONS ========================= -->
+
+	<!-- Configurer that replaces ${...} placeholders with values from a properties file -->
+	<!-- (in this case, JDBC-related settings for the dataSource definition below) -->
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location"><value>classpath:jdbc.properties</value></property>
+	</bean>
+
+	<!-- Message source for this context, loaded from localized "messages_xx" files -->
+	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basename"><value>messages</value></property>
+	</bean>
+
+
+	<!-- ========================= RESOURCE DEFINITIONS ========================= -->
+
+	<!-- Local DataSource that works in any environment -->
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName"><value>${jdbc.driverClassName}</value></property>
+		<property name="url"><value>${jdbc.url}</value></property>
+		<property name="username"><value>${jdbc.username}</value></property>
+		<property name="password"><value>${jdbc.password}</value></property>
+	</bean>
+
+	<!-- Hibernate SessionFactory -->
+
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="dataSource"><ref local="dataSource"/></property>
+		<property name="mappingResources">
+                  <list>
+						<value>com/myconnector/domain/UserData.hbm.xml</value>
+						<value>com/myconnector/domain/UserCookie.hbm.xml</value>
+						<value>com/myconnector/domain/TodoItem.hbm.xml</value>
+						<value>com/myconnector/domain/TodoContext.hbm.xml</value>
+						<value>com/myconnector/domain/TodoList.hbm.xml</value>
+						<value>com/myconnector/domain/Invite.hbm.xml</value>
+						<value>com/myconnector/domain/EmailVerification.hbm.xml</value>						
+                  </list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">${hibernate.dialect}</prop>
+				<prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl.auto}</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- Transaction manager for a single Hibernate SessionFactory (alternative to JTA) -->
+	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory"><ref local="sessionFactory"/></property>
+	</bean>
+	
+	<bean id="hibernateDAO" abstract="true">
+		<property name="sessionFactory"><ref local="sessionFactory"/></property>
+	</bean>
+
+	<!-- Data Access Objects -->
+	<bean id="userDataDAO" class="com.myconnector.dao.hibernate.UserDataDAOImpl" parent="hibernateDAO"/>
+	<bean id="userCookieDAO" class="com.myconnector.dao.hibernate.UserCookieDAOImpl" parent="hibernateDAO"/>
+	<bean id="todoListDAO" class="com.myconnector.dao.hibernate.TodoListDAOImpl" parent="hibernateDAO"/>
+	<bean id="todoItemDAO" class="com.myconnector.dao.hibernate.TodoItemDAOImpl" parent="hibernateDAO"/>
+	<bean id="inviteDAO" class="com.myconnector.dao.hibernate.InviteDAOImpl" parent="hibernateDAO"/>
+	<bean id="emailVerificationDAO" class="com.myconnector.dao.hibernate.EmailVerificationDAOImpl"
+		 parent="hibernateDAO"/>
+	
+	<!-- Utility objects -->
+	
+	<!-- 
+	<bean id="sha1PasswordEncoder" class="com.myconnector.util.Sha1DbPasswordEncoder"/>
+	 -->	
+	
+	<bean id="bCryptPasswordEncoder" class="com.myconnector.util.BCryptDbPasswordEncoder"/>
+	
+	<!-- Services / Business Objects -->
+	
+	<bean id="securityService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager"><ref bean="transactionManager"/></property>
+		<property name="target">
+			<bean class="com.myconnector.service.SecurityServiceImpl" autowire="byType">
+				<property name="userDataDAO"><ref local="userDataDAO"/></property>
+				<property name="userCookieDAO"><ref local="userCookieDAO"/></property>
+				<property name="dbPasswordEncoder" ref="bCryptPasswordEncoder"/>
+			</bean>		
+		</property>
+		<property name="transactionAttributes">
+			<props>				
+				<prop key="*">PROPAGATION_REQUIRED</prop>
+				<prop key="initialize">PROPAGATION_REQUIRED</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="userService" parent="txProxyTemplate">
+	    <property name="target">
+			<bean class="com.myconnector.service.UserServiceImpl" autowire="byType" />
+		</property>
+	</bean>	
+
+	<bean id="todoListService" parent="txProxyTemplate">
+	    <property name="target">
+			<bean class="com.myconnector.service.TodoListServiceImpl" autowire="byType">
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="todoItemService" parent="txProxyTemplate">
+	    <property name="target">
+			<bean class="com.myconnector.service.TodoItemServiceImpl" autowire="byType">
+				<property name="todoListService" ref="todoListService"/>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="inviteService" parent="txProxyTemplateWithoutLoginCheck">
+	    <property name="target">
+			<bean class="com.myconnector.service.InviteServiceImpl" autowire="byType"/>
+		</property>
+	</bean>
+
+	<bean id="emailVerificationService" parent="txProxyTemplateWithoutLoginCheck">
+	    <property name="target">
+			<bean class="com.myconnector.service.EmailVerificationServiceImpl" autowire="byType"/>
+		</property>
+	</bean>
+
+	<!-- START Web Services -->
+
+	<bean id="testService" class="com.myconnector.webservice.TestServiceImpl">
+	</bean>
+
+	<bean id="todoWebService" class="com.myconnector.webservice.TodoWebServiceImpl" autowire="byType">
+		<property name="securityService" ref="securityService"></property>
+	</bean>
+
+	<!-- END Web Services -->
+
+	<!-- AJAX servces -->
+	
+	<bean id="todoAjax" class="com.myconnector.web.ajax.TodoAjaxImpl" autowire="byType">
+	</bean>
+
+	<bean id="loginCheckInterceptor" class="com.myconnector.service.LoginCheckInterceptor">
+		<property name="securityService" ref="securityService"/>
+	</bean>
+
+	<!--  Transaction proxies for services -->
+
+	<bean id="txProxyTemplate" abstract="true"
+	        class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+	    <property name="transactionManager"><ref local="transactionManager"></ref></property>
+	    <property name="transactionAttributes">
+	      <props>
+	        <prop key="*">PROPAGATION_REQUIRED</prop>
+	      </props>
+	    </property>
+	    <property name="preInterceptors">
+	    	<list>
+	    		<ref bean="loginCheckInterceptor"/>
+	    	</list>
+	    </property>
+	</bean>
+
+	<bean id="txProxyTemplateWithoutLoginCheck" abstract="true"
+	        class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+	    <property name="transactionManager"><ref local="transactionManager"></ref></property>
+	    <property name="transactionAttributes">
+	      <props>
+	        <prop key="*">PROPAGATION_REQUIRED</prop>
+	      </props>
+	    </property>
+	</bean>
+ 
+	<bean id="defaultValidator" class="com.myconnector.web.DefaultValidator">
+	</bean>
+
+	<!--  Commons Validator -->
+<!-- 
+	<bean id="validatorFactory" class="org.springframework.validation.commons.DefaultValidatorFactory" 
+	    init-method="init">
+	    <property name="resources">
+	        <list>
+	            <value>classpath:/validator-rules.xml</value>
+	            <value>classpath:/validation.xml</value>
+	        </list>
+	    </property>
+	</bean>
+	
+	<bean id="beanValidator" class="org.springframework.validation.commons.BeanValidator">
+	    <property name="validatorFactory"><ref local="validatorFactory"/></property>
+	</bean>
+ -->
+ 
+ 	<!-- E-mail Support -->
+ 	
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="localhost"/>
+	</bean>
+ 	
+ 	<bean id="inviteTemplate" class="org.springframework.mail.SimpleMailMessage">
+ 		<property name="from" value="noreply@truedolist.com" />
+ 		<property name="subject" value="You have been invited to True Do List" />
+ 	</bean>
+ 	
+ 	<bean id="emailService" class="com.myconnector.service.EmailServiceImpl" autowire="byType">
+ 	</bean>
+
+</beans>

@@ -1,0 +1,14 @@
+<!DOCTYPE dwr PUBLIC "-//GetAhead Limited//DTD Direct Web Remoting 2.0//EN" "http://www.getahead.ltd.uk/dwr//dwr20.dtd">
+<dwr>
+	<allow>
+		<create creator="new" javascript="JDate">
+			<param name="class" value="java.util.Date" />
+		</create>
+		<convert converter="bean" match="com.myconnector.domain.TodoItem">
+			<param name="include" value="id, title"></param>
+		</convert>
+		<create creator="spring" javascript="TodoAjax">
+			<param name="beanName" value="todoAjax" />
+		</create>
+	</allow>
+</dwr>
